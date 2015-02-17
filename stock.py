@@ -7,8 +7,8 @@ class SP():
 	"""
 	def __init__(self,symbol = "None"):
 	#Initialize file to be pointed to 
-		self.spFile = 'C:\Users\jmpet\Desktop\sp500.csv'
-		#self.spFile = PATH_TO_CSV
+		
+		self.spFile = PATH_TO_CSV
 		
 		self.spDict = {}
 		#open CSV and parse it in to a readable dictionary 
