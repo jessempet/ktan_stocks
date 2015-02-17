@@ -1,2 +1,5 @@
 # ktan_stocks
-Poorly written script to display out SP500 stock historical prices
+Requires Python 2.7 or below
+dependency: https://pypi.python.org/pypi/ystockquote
+# pip install ystockquote
+
