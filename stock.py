@@ -1,6 +1,7 @@
 import ystockquote
 import csv
-
+import datetime
+import urllib2
 
 class SP():
 	"""
@@ -58,30 +59,45 @@ class Stock():
 def main():
 	#debug
 	sp500 = SP()
-	symbol = raw_input("Enter in the symbol >>> ")
+	spFile = '/home/jesse/Desktop/Python/ktan_stocks-master/sp500.csv'
+
+	with open(spFile, 'r') as f:
+		reader = csv.reader(f)
+		symbols = [rows[0] for rows in reader]
+
 	startDate = raw_input("Enter the start date in YYYY-MM-DD format >>> ")
 	endDate = raw_input ("Enter the end date in YYY-MM-DD format >>> ")
-	stock = Stock(symbol.upper(), startDate, endDate)
-	data = stock.getData()
-	days = [keys for keys in data.keys()]
-	adj = [float(data.values()[i]['Adj Close']) for i in range(len(data))]
-	close = [float(data.values()[i]['Close']) for i in range(len(data))]
-	high = [float(data.values()[i]['High']) for i in range(len(data))]
-	low = [float(data.values()[i]['Low']) for i in range(len(data))]
-	op = [float(data.values()[i]['Open']) for i in range(len(data))]
-	volume = [int(data.values()[i]['Volume']) for i in range(len(data))]
-	
-	with open('test2.csv', 'wo') as f:
+	print "writing to file..."
+	a = datetime.datetime.now()
+	with open('sp500_avgs.csv', 'wo') as f:
 		writer = csv.writer(f)
-		
 		titles = ["Day", "Close","High", "Low","Open", "Volume", "Symbol"]
-		
 		writer.writerow(titles)
-		syms = [symbol for i in range(len(zip(days,close,high,low,op,volume)))]
-		rows =  zip(days,close,high,low,op,volume, syms)
-		for row in rows:
-			writer.writerow(row)
-		
+		for sym in symbols:
+			try:
+				
+					
+					stock = Stock(sym.upper(), startDate, endDate)
+					data = stock.getData()
+					days = [keys for keys in data.keys()]
+					adj = [float(data.values()[i]['Adj Close']) for i in range(len(data))]
+					close = [float(data.values()[i]['Close']) for i in range(len(data))]
+					high = [float(data.values()[i]['High']) for i in range(len(data))]
+					low = [float(data.values()[i]['Low']) for i in range(len(data))]
+					op = [float(data.values()[i]['Open']) for i in range(len(data))]
+					volume = [int(data.values()[i]['Volume']) for i in range(len(data))]
+					
+					
+					syms = [sym for i in range(len(zip(days,close,high,low,op,volume)))]
+					rows =  zip(days,close,high,low,op,volume, syms)
+					for row in rows:
+						writer.writerow(row)
+			except urllib2.HTTPError, error:
+				contents = error.read()
+
+	b = datetime.datetime.now()
+
+	print "Write complete! in %s" % (b-a)
 	
 if __name__ == '__main__':
 	main()
