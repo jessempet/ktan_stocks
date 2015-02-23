@@ -1,6 +1,7 @@
 import ystockquote
 import csv
 
+
 class SP():
 	"""
 	Creates an S&P500 object that contains a dictionary of all SP500 stock companies
@@ -8,7 +9,7 @@ class SP():
 	def __init__(self,symbol = "None"):
 	#Initialize file to be pointed to 
 		
-		self.spFile = PATH_TO_CSV
+		self.spFile = '/home/jesse/Desktop/Python/ktan_stocks-master/sp500.csv'
 		
 		self.spDict = {}
 		#open CSV and parse it in to a readable dictionary 
@@ -34,29 +35,25 @@ class Stock():
 	"""
 	
 	#Default constructor creating object attributes to be sent to yahoo finance api 
-	def __init__(self, symbol, startDate=0, endDate=0):
+	def __init__(self, symbol, startDate='', endDate=''):
 		self.symbol = symbol
 		self.startDate = startDate
 		self.endDate = endDate
 		#this line of code will populate historical stock data in to a parse-able dictionary
-		self.dayDict = ystockquote.get_historical_prices(self.symbol, self.startDate, self.endDate)
-		for key in self.dayDict:
-			for currentDate in key:
-				self.adj = self.dayDict[currentDate]['Adj Close']
-				self.close = self.dayDict[currentDate]['Close']
-				self.high = self.dayDict[currentDate]['High']
-				self.low = self.dayDict[currentDate]['Low']
-				self.open = self.dayDict[currentDate]['Open']
-				self.volume = self.dayDict[currentDate]['Volume']
+		
 		#Instantiating an SP object to print out the name corresponding to the symbol
 		self.sp500 = SP(self.symbol)
-	
+		
+	def getData(self):
+		info = ystockquote.get_historical_prices(self.symbol, self.startDate, self.endDate)
+		return info
 	#syntax stock = stock() --> print stock["date  in YYYY-MM-DD"] --> returns dictionary returned by 
 	#ystockquote
-	          
+
+	         
 	def __str__(self):
-		return "Adj Close: %s\nClose: %s\n High: %s\nLow: %s\nOpen: %s\nVolume: %s\n" % (self.adj, self.close, self.high, self.low, self.open, self.volume)  
-		
+		return "%s\t%s\t%s" % (self.symbol,self.startDate,self.endDate)
+	
 		
 def main():
 	#debug
@@ -64,7 +61,27 @@ def main():
 	symbol = raw_input("Enter in the symbol >>> ")
 	startDate = raw_input("Enter the start date in YYYY-MM-DD format >>> ")
 	endDate = raw_input ("Enter the end date in YYY-MM-DD format >>> ")
-	stock = Stock(symbol, startDate, endDate)
+	stock = Stock(symbol.upper(), startDate, endDate)
+	data = stock.getData()
+	days = [keys for keys in data.keys()]
+	adj = [float(data.values()[i]['Adj Close']) for i in range(len(data))]
+	close = [float(data.values()[i]['Close']) for i in range(len(data))]
+	high = [float(data.values()[i]['High']) for i in range(len(data))]
+	low = [float(data.values()[i]['Low']) for i in range(len(data))]
+	op = [float(data.values()[i]['Open']) for i in range(len(data))]
+	volume = [int(data.values()[i]['Volume']) for i in range(len(data))]
+	
+	with open('test2.csv', 'wo') as f:
+		writer = csv.writer(f)
+		
+		titles = ["Day", "Close","High", "Low","Open", "Volume", "Symbol"]
+		
+		writer.writerow(titles)
+		syms = [symbol for i in range(len(zip(days,close,high,low,op,volume)))]
+		rows =  zip(days,close,high,low,op,volume, syms)
+		for row in rows:
+			writer.writerow(row)
+		
 	
 if __name__ == '__main__':
 	main()
