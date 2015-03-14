@@ -10,7 +10,7 @@ class SP():
 	def __init__(self,symbol = "None"):
 	#Initialize file to be pointed to 
 		
-		self.spFile = '/home/jesse/Desktop/Python/ktan_stocks-master/sp500.csv'
+		self.spFile = "E:\\Python27\\ktan_stocks-master\\sp500.csv"
 		
 		self.spDict = {}
 		#open CSV and parse it in to a readable dictionary 
@@ -59,19 +59,19 @@ class Stock():
 def main():
 	#debug
 	sp500 = SP()
-	spFile = '/home/jesse/Desktop/Python/ktan_stocks-master/sp500.csv'
-
+	spFile = "E:\\Python27\\ktan_stocks-master\\sp500.csv"
 	with open(spFile, 'r') as f:
 		reader = csv.reader(f)
 		symbols = [rows[0] for rows in reader]
 
 	startDate = raw_input("Enter the start date in YYYY-MM-DD format >>> ")
-	endDate = raw_input ("Enter the end date in YYY-MM-DD format >>> ")
+	endDate = raw_input ("Enter the end date in YYYY-MM-DD format >>> ")
 	print "writing to file..."
 	a = datetime.datetime.now()
-	with open('sp500_avgs.csv', 'wo') as f:
+	#kenny change below
+	with open('E:\Python27\ktan_stocks-master\sp500_1975.csv', 'w') as f:
 		writer = csv.writer(f)
-		titles = ["Day", "Close","High", "Low","Open", "Volume", "Symbol"]
+		titles = ["Day", "Close", "Adj","High", "Low","Open", "Volume", "Symbol"]
 		writer.writerow(titles)
 		for sym in symbols:
 			try:
@@ -88,8 +88,8 @@ def main():
 					volume = [int(data.values()[i]['Volume']) for i in range(len(data))]
 					
 					
-					syms = [sym for i in range(len(zip(days,close,high,low,op,volume)))]
-					rows =  zip(days,close,high,low,op,volume, syms)
+					syms = [sym for i in range(len(zip(days,close,adj,high,low,op,volume)))]
+					rows =  zip(days,close,adj,high,low,op,volume, syms)
 					for row in rows:
 						writer.writerow(row)
 			except urllib2.HTTPError, error:
